@@ -16,6 +16,7 @@ The first pilot is intentionally narrow: **utility shutoff prevention grants cap
 ```text
 docs/
   project-brief.md       # What this project is and is not
+  design-doc.md          # v1 system design and architecture
   grant-policy.md        # Utility shutoff pilot policy
   evaluation-plan.md     # How we will measure usefulness and failure modes
 schemas/
