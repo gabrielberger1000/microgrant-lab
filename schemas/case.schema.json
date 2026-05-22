@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microgrant-lab.local/schemas/case.schema.json",
+  "title": "Microgrant Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "version",
+    "pilot",
+    "created_at",
+    "channel",
+    "applicant",
+    "household",
+    "request",
+    "evidence",
+    "narrative",
+    "risk_flags",
+    "ground_truth"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$"
+    },
+    "version": {
+      "type": "string"
+    },
+    "pilot": {
+      "type": "string",
+      "const": "utility_shutoff_prevention_300"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "channel": {
+      "type": "string",
+      "enum": ["synthetic", "volunteer_simulation", "shadow_mode", "live_pilot"]
+    },
+    "applicant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["self_reported_name", "age_range", "preferred_language", "contact_methods", "address"],
+      "properties": {
+        "self_reported_name": {
+          "type": "string"
+        },
+        "age_range": {
+          "type": "string",
+          "enum": ["18-24", "25-34", "35-44", "45-54", "55-64", "65+", "unknown"]
+        },
+        "preferred_language": {
+          "type": "string"
+        },
+        "contact_methods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["email", "sms", "phone", "mail"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "address": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["city", "state", "postal_code"],
+          "properties": {
+            "city": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2
+            },
+            "postal_code": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "household": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adults", "children", "monthly_income_usd", "housing_status"],
+      "properties": {
+        "adults": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "children": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "monthly_income_usd": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "housing_status": {
+          "type": "string",
+          "enum": ["renter", "owner", "staying_with_family", "temporary_housing", "unknown"]
+        }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "utility_type",
+        "amount_due_usd",
+        "amount_requested_usd",
+        "shutoff_date",
+        "vendor",
+        "account_last4",
+        "payment_route"
+      ],
+      "properties": {
+        "utility_type": {
+          "type": "string",
+          "enum": ["electric", "gas", "water", "municipal_bundle", "internet", "phone", "rent", "other"]
+        },
+        "amount_due_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "amount_requested_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "shutoff_date": {
+          "type": ["string", "null"],
+          "format": "date"
+        },
+        "vendor": {
+          "type": "string"
+        },
+        "account_last4": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9]{4}$"
+        },
+        "payment_route": {
+          "type": "string",
+          "enum": ["direct_to_vendor", "unknown", "cash_to_applicant", "reimbursement"]
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "status", "matches_applicant", "notes"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "utility_bill",
+              "shutoff_notice",
+              "identity_document",
+              "vendor_payment_route",
+              "income_document",
+              "applicant_statement",
+              "other"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["provided", "missing", "suspicious", "unverified"]
+          },
+          "issued_at": {
+            "type": ["string", "null"],
+            "format": "date"
+          },
+          "matches_applicant": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "narrative": {
+      "type": "string"
+    },
+    "risk_flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "severity", "description"],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ground_truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_decision", "expected_amount_usd", "case_type", "reason"],
+      "properties": {
+        "expected_decision": {
+          "type": "string",
+          "enum": ["approve", "deny", "needs_more_info", "needs_review"]
+        },
+        "expected_amount_usd": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "case_type": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
